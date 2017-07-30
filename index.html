@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToDoList</title>
+</head>
+<link rel='stylesheet' type='text/css' href='dst/css/style.css' media='all' />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<body>
+
+<div id="js-app">
+
+  <div class="header">
+    <h1 class="header-title">memoApps</h1>
+    <button type="button" name="button"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+  </div>
+
+  <div class="body">
+    <div class="body-list">
+      <ul>
+        <li v-for="item in items">
+          <div v-on:click="preview(item)" v-html="item.compiledText"></div>
+          <button type="button" name="button"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+          <button v-on:click="deleteItem(item)" type="button" name="button"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+        </li>
+      </ul>
+    </div>
+    <div class="body-preview">
+      <div v-html="selectedItem.compiledText" type="text"></div>
+    </div>
+  </div>
+
+  <div class="editor is-hide">
+    <div class="editor-input">
+      <textarea v-model="originalText" v-bind:value="input" v-on:input="update"></textarea>
+    </div>
+    <div class="editor-preview">
+      <div id="js-compiled-Area" v-html="compiledMarkdown">
+      </div>
+    </div>
+    <button v-on:click="addItem()" type="button" name="button">追加</button>
+  </div>
+
+</div>
+
+<script>
+var app = new Vue({
+  el: '#js-app',
+  data: {
+    items: [
+      {originalText: '# aaaaaa', compiledText: '<h1>aaaaa</h1>'},
+      {originalText: '# bbbbbb', compiledText: '<h1>bbbbb</h1>'}
+    ],
+    selectedItem: {
+      compiledText: '<h1>aaaaa</h1>'
+    },
+    input: ''
+  },
+  methods: {
+    preview: function(item){
+      this.selectedItem = item;
+    },
+    update: function(eventObject){
+      this.input = eventObject.target.value;
+    },
+    addItem: function(){
+      var newOriginalText = this.originalText;
+      var newCompiledText = this.compiledMarkdown;
+      var compiledArea = document.getElementById('js-compiled-Area');
+
+      if(!newOriginalText){return;}
+      this.items.push(
+        {originalText: newOriginalText, compiledText: newCompiledText},
+      );
+      this.originalText  = '';
+      compiledArea.innerHTML = '';
+    },
+    deleteItem: function(item){
+      var index = this.items.indexOf(item);
+      this.items.splice(index, 1)
+    }
+  },
+  computed: {
+    compiledMarkdown:function(){
+      return marked(this.input);
+    }
+  }
+})
+</script>
+
+</body>
+</html>

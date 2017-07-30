@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToDoList</title>
+</head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<style media="screen">
+  .done {
+    color: #ccc;
+  }
+</style>
+
+<body>
+
+  <div id="js-app">
+
+    <ul>
+      <li v-on:click="preview(todo)" v-for="todo in items">
+        <div >{{todo.text}}</div>
+        <button v-on:click="deleteItem(todo)" type="button" name="button">削除</button>
+      </li>
+    </ul>
+
+    <input v-model="selectedItem.text" type="text">
+
+    <input v-model="todoText">
+    <button v-on:click="addItem()" type="button" name="button">追加</button>
+
+    <textarea v-bind:value="input" v-on:input="update"></textarea>
+    <div v-html="compiledMarkdown"></div>
+
+  </div>
+
+<script>
+var app = new Vue({
+  el: '#js-app',
+  data: {
+    todoText: '',
+    items: [
+      {text: '# サンプルサンプルサンプル'},
+      {text: '# デモデモデモデモデモデモ'}
+    ],
+    selectedItem: {
+      text: '',
+    },
+    input: '# input'
+  },
+  methods: {
+    addItem: function(){
+      var newTodo = this.todoText.trim();
+      if(!newTodo){return;}
+      this.items.push(
+        {text: newTodo},
+      );
+      this.todoText = '';
+    },
+    deleteItem: function(todo){
+      var index = this.items.indexOf(todo);
+      this.items.splice(index, 1);
+    },
+    preview: function(todo){
+      this.selectedItem = todo;
+    },
+    update: function(eventObject){
+      this.input = eventObject.target.value;
+    }
+  },
+  computed: {
+    compiledMarkdown:function(){
+      return marked(this.input);
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
