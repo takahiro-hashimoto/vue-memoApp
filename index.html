@@ -6,6 +6,7 @@
 <title>ToDoList</title>
 </head>
 <link rel='stylesheet' type='text/css' href='dst/css/style.css' media='all' />
+<link rel='stylesheet' type='text/css' href='editorStyle/Base16 Marrakesh.css' media='all' />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
@@ -15,51 +16,73 @@
 
 <div id="js-app">
 
-  <div class="header">
-    <h1 class="header-title">memoApps</h1>
-    <button type="button" name="button"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+  <div class="header clearfix">
+    <h1 class="header-title l-left">memoApps</h1>
+    <button class="l-header-button header-button" type="button" v-on:click="isShow=!isShow">
+      <i class="fa fa-plus-square-o" aria-hidden="true"></i>
+    </button>
   </div>
 
-  <div class="body">
-    <div class="body-list">
-      <ul>
-        <li v-for="item in items">
-          <div v-on:click="preview(item)" v-html="item.compiledText"></div>
-          <button type="button" name="button"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-          <button v-on:click="deleteItem(item)" type="button" name="button"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
-        </li>
-      </ul>
-    </div>
-    <div class="body-preview">
-      <div v-html="selectedItem.compiledText" type="text"></div>
+  <div class="content">
+    <ul id="js-content-list" class="l-content-list content-list">
+      <li class="content-item" v-on:click="preview(item)" v-for="item in items">
+        <div class="content-item-title" v-html="item.title"></div>
+        <button class="content-button l-content-button-edit" type="button" name="button">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </button>
+        <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button" name="button">
+          <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </button>
+      </li>
+    </ul>
+    <div id="js-content-preview" class="l-content-preview content-preview">
+      <div class="contet-preview-title l-bottom-xlarge" v-html="selectedItem.title" type="text"></div>
+      <div class="compile" v-html="selectedItem.compiledText" type="text"></div>
     </div>
   </div>
 
-  <div class="editor is-hide">
-    <div class="editor-input">
-      <textarea v-model="originalText" v-bind:value="input" v-on:input="update"></textarea>
+  <!-- modal for newItemT ▼-->
+  <div class="editor" v-bind:class="{show: isShow}">
+    <div class="editor-header l-bottom-midium">
+      <input class="editor-title" v-model="itemTitle" type="text" placeholder="タイトルを入力してください">
     </div>
-    <div class="editor-preview">
-      <div id="js-compiled-Area" v-html="compiledMarkdown">
+    <div class="editor-content clearfix l-bottom-midium">
+      <div class="editor-input">
+        <textarea class="editor-textarea" v-model="originalText" v-bind:value="input" v-on:input="update"></textarea>
+      </div>
+      <div class="editor-preview compile">
+        <div id="js-compiled-Area" v-html="compiledMarkdown">
+        </div>
       </div>
     </div>
-    <button v-on:click="addItem()" type="button" name="button">追加</button>
+    <div class="editor-bottom">
+      <button class="button button-save" v-on:click="addItem()" button type="button" name="button">保存</button>
+      <button class="button button-close" v-on:click="isShow=!isShow" type="button" name="button">閉じる</button>
+    </div>
   </div>
+  <!-- modal for newItemT ▲-->
+
+  <div class="overlay" v-bind:class="{show: isShow}" v-on:click="isShow=!isShow"></div>
 
 </div>
 
 <script>
+
 var app = new Vue({
   el: '#js-app',
   data: {
     items: [
-      {originalText: '# aaaaaa', compiledText: '<h1>aaaaa</h1>'},
-      {originalText: '# bbbbbb', compiledText: '<h1>bbbbb</h1>'}
+      {title: '見出し', originalText: '## 見出し2 ### 見出し3 #### 見出し4 ##### 見出し5 ###### 見出し6', compiledText: '<h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6>'},
+      {title: 'リスト', originalText: '# リスト - リスト1　- ネスト リスト1_1 - ネスト リスト1_1_1 - ネスト リスト1_1_2 - ネスト リスト1_2 -リスト2 -リスト3', compiledText: '<ul><li>ネスト リスト1_1<ul><li>ネスト リスト1_1_1</li><li>ネスト リスト1_1_2</li></ul></li><li>ネスト リスト1_2</li></ul>'},
+      {title: 'テーブル', originalText: '|header1|header2|header3| |:--|--:|:--:| |align left|align right|align center| |a|b|c|', compiledText: '<table><thead><tr><th>header1</th><th>header2</th><th>header3</th></tr></thead><tbody><tr><td>align left</td><td>align right</td><td>align center</td></tr><tr><td>a</td><td>b</td><td>c</td></tr></tbody></table>'},
+      {title: 'リンク', originalText: '[Google](https://www.google.co.jp/)', compiledText: '<a href="https://www.google.co.jp/" rel="nofollow noopener" target="_blank">Google</a>'},
     ],
     selectedItem: {
+      title: 'aaaaaaaaa',
       compiledText: '<h1>aaaaa</h1>'
     },
-    input: ''
+    input: '',
+    isShow: false,
   },
   methods: {
     preview: function(item){
@@ -69,13 +92,14 @@ var app = new Vue({
       this.input = eventObject.target.value;
     },
     addItem: function(){
+      var newItemTitle = this.itemTitle;
       var newOriginalText = this.originalText;
       var newCompiledText = this.compiledMarkdown;
       var compiledArea = document.getElementById('js-compiled-Area');
 
-      if(!newOriginalText){return;}
+      if(!newOriginalText && !newItemTitle){return;}
       this.items.push(
-        {originalText: newOriginalText, compiledText: newCompiledText},
+        {title: newItemTitle, originalText: newOriginalText, compiledText: newCompiledText},
       );
       this.originalText  = '';
       compiledArea.innerHTML = '';
