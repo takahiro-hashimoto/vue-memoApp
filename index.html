@@ -69,27 +69,26 @@
 
 <script>
 
-$(function(){
-  $('.js-content-item').mouseover(function(e) {
-    $(this).children('.js-content-button-container').removeClass('is-hide');
-    })
-    .mouseout(function(e) {
-      $(this).children('.js-content-button-container').addClass('is-hide');
-    });
+$(document).on('mouseover', '.js-content-item', function() {
+  $(this).children('.js-content-button-container').removeClass('is-hide');
+});
+
+$(document).on('mouseout', '.js-content-item', function() {
+  $(this).children('.js-content-button-container').addClass('is-hide');
 });
 
 var app = new Vue({
   el: '#js-app',
   data: {
     items: [
-      {title: '見出し', originalText: '## 見出し2 ### 見出し3 #### 見出し4 ##### 見出し5 ###### 見出し6', compiledText: '<h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6>'},
+      {title: '見出し', originalText: '## 見出し2 ### 見出し3 #### 見出し4 ##### 見出し5 ###### 見出し6', compiledText: '<h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6><h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6><h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6>'},
       {title: 'リスト', originalText: '# リスト - リスト1　- ネスト リスト1_1 - ネスト リスト1_1_1 - ネスト リスト1_1_2 - ネスト リスト1_2 -リスト2 -リスト3', compiledText: '<ul><li>ネスト リスト1_1<ul><li>ネスト リスト1_1_1</li><li>ネスト リスト1_1_2</li></ul></li><li>ネスト リスト1_2</li></ul>'},
       {title: 'テーブル', originalText: '|header1|header2|header3| |:--|--:|:--:| |align left|align right|align center| |a|b|c|', compiledText: '<table><thead><tr><th>header1</th><th>header2</th><th>header3</th></tr></thead><tbody><tr><td>align left</td><td>align right</td><td>align center</td></tr><tr><td>a</td><td>b</td><td>c</td></tr></tbody></table>'},
       {title: 'リンク', originalText: '[Google](https://www.google.co.jp/)', compiledText: '<a href="https://www.google.co.jp/" rel="nofollow noopener" target="_blank">Google</a>'},
     ],
     selectedItem: {
-      title: 'aaaaaaaaa',
-      compiledText: '<h1>aaaaa</h1>'
+      title: '',
+      compiledText: ''
     },
     input: '',
     isShow: false,
