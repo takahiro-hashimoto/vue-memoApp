@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ToDoList</title>
+<title>memoApps</title>
 </head>
 <link rel='stylesheet' type='text/css' href='dst/css/style.css' media='all' />
-<link rel='stylesheet' type='text/css' href='editorStyle/Base16 Marrakesh.css' media='all' />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
@@ -25,14 +24,16 @@
 
   <div class="content">
     <ul id="js-content-list" class="l-content-list content-list">
-      <li class="content-item" v-on:click="preview(item)" v-for="item in items">
+      <li class="js-content-item content-item" v-on:click="preview(item)" v-for="item in items">
         <div class="content-item-title" v-html="item.title"></div>
-        <button class="content-button l-content-button-edit" type="button" name="button">
-          <i class="fa fa-pencil" aria-hidden="true"></i>
-        </button>
-        <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button" name="button">
-          <i class="fa fa-trash-o" aria-hidden="true"></i>
-        </button>
+        <div class="js-content-button-container content-button-container is-hide">
+          <button class="content-button l-content-button-edit" type="button" name="button">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+          </button>
+          <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button" name="button">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+          </button>
+        </div>
       </li>
     </ul>
     <div id="js-content-preview" class="l-content-preview content-preview">
@@ -56,7 +57,7 @@
       </div>
     </div>
     <div class="editor-bottom">
-      <button class="button button-save" v-on:click="addItem()" button type="button" name="button">保存</button>
+      <button class="button button-save" v-on:click="addItem(), isShow=!isShow" type="button" name="button">保存</button>
       <button class="button button-close" v-on:click="isShow=!isShow" type="button" name="button">閉じる</button>
     </div>
   </div>
@@ -67,6 +68,15 @@
 </div>
 
 <script>
+
+$(function(){
+  $('.js-content-item').mouseover(function(e) {
+    $(this).children('.js-content-button-container').removeClass('is-hide');
+    })
+    .mouseout(function(e) {
+      $(this).children('.js-content-button-container').addClass('is-hide');
+    });
+});
 
 var app = new Vue({
   el: '#js-app',
@@ -97,16 +107,21 @@ var app = new Vue({
       var newCompiledText = this.compiledMarkdown;
       var compiledArea = document.getElementById('js-compiled-Area');
 
-      if(!newOriginalText && !newItemTitle){return;}
+      if(!newItemTitle && !newOriginalText){
+        return;
+      }
+
       this.items.push(
-        {title: newItemTitle, originalText: newOriginalText, compiledText: newCompiledText},
+        {title: newItemTitle, originalText: newOriginalText, compiledText: newCompiledText}
       );
+
+      this.itemTitle = '';
       this.originalText  = '';
       compiledArea.innerHTML = '';
     },
     deleteItem: function(item){
       var index = this.items.indexOf(item);
-      this.items.splice(index, 1)
+      this.items.splice(index, 1);
     }
   },
   computed: {
