@@ -27,10 +27,10 @@
       <li class="js-content-item content-item" v-on:click="preview(item)" v-for="item in items">
         <div class="content-item-title" v-html="item.title"></div>
         <div class="js-content-button-container content-button-container is-hide">
-          <button class="content-button l-content-button-edit" type="button" name="button">
+          <button class="content-button l-content-button-edit" v-on:click="editingItem(item), show=!show" type="button">
             <i class="fa fa-pencil" aria-hidden="true"></i>
           </button>
-          <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button" name="button">
+          <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
           </button>
         </div>
@@ -57,13 +57,35 @@
       </div>
     </div>
     <div class="editor-bottom">
-      <button class="button button-save" v-on:click="addItem(), isShow=!isShow" type="button" name="button">保存</button>
+      <button class="button button-edit" v-on:click="addItem(), isShow=!isShow" type="button" name="button">保存</button>
       <button class="button button-close" v-on:click="isShow=!isShow" type="button" name="button">閉じる</button>
     </div>
   </div>
   <!-- modal for newItemT ▲-->
 
+  <!-- modal for editingItemT ▼-->
+  <div class="editor" v-bind:class="{show: show}">
+    <div class="editor-header l-bottom-midium">
+      <input class="editor-title" v-model="updateItem.title" type="text" placeholder="タイトルを入力してください">
+    </div>
+    <div class="editor-content clearfix l-bottom-midium">
+      <div class="editor-input">
+        <textarea class="editor-textarea" v-model="updateItem.originalText" v-bind:value="input" v-on:input="update"></textarea>
+      </div>
+      <div class="editor-preview compile">
+        <div id="js-compiled-area" v-html="compiledMarkdown">
+        </div>
+      </div>
+    </div>
+    <div class="editor-bottom">
+      <button class="button button-save" v-on:click="editing(), show=!show" type="button" name="button">変更</button>
+      <button class="button button-close" v-on:click="show=!show" type="button" name="button">閉じる</button>
+    </div>
+  </div>
+  <!-- modal for editingItemT ▲-->
+
   <div class="overlay" v-bind:class="{show: isShow}" v-on:click="isShow=!isShow"></div>
+  <div class="overlay" v-bind:class="{show: show}" v-on:click="show=!show"></div>
 
 </div>
 
@@ -81,17 +103,20 @@ var app = new Vue({
   el: '#js-app',
   data: {
     items: [
-      {title: '見出し', originalText: '## 見出し2 ### 見出し3 #### 見出し4 ##### 見出し5 ###### 見出し6', compiledText: '<h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6><h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6><h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6>'},
-      {title: 'リスト', originalText: '# リスト - リスト1　- ネスト リスト1_1 - ネスト リスト1_1_1 - ネスト リスト1_1_2 - ネスト リスト1_2 -リスト2 -リスト3', compiledText: '<ul><li>ネスト リスト1_1<ul><li>ネスト リスト1_1_1</li><li>ネスト リスト1_1_2</li></ul></li><li>ネスト リスト1_2</li></ul>'},
-      {title: 'テーブル', originalText: '|header1|header2|header3| |:--|--:|:--:| |align left|align right|align center| |a|b|c|', compiledText: '<table><thead><tr><th>header1</th><th>header2</th><th>header3</th></tr></thead><tbody><tr><td>align left</td><td>align right</td><td>align center</td></tr><tr><td>a</td><td>b</td><td>c</td></tr></tbody></table>'},
-      {title: 'リンク', originalText: '[Google](https://www.google.co.jp/)', compiledText: '<a href="https://www.google.co.jp/" rel="nofollow noopener" target="_blank">Google</a>'},
+      // {title: '見出し', originalText: '## 見出し2↵### 見出し3↵#### 見出し4', compiledText: '<h2>見出し</h2><h3>見出し</h3><h4>見出し</h4><h5>見出し</h5><h6>見出し</h6>'},
+      // {title: 'リスト', originalText: '# リスト - リスト1　- ネスト リスト1_1 - ネスト リスト1_1_1 - ネスト リスト1_1_2 - ネスト リスト1_2 -リスト2 -リスト3', compiledText: '<ul><li>ネスト リスト1_1<ul><li>ネスト リスト1_1_1</li><li>ネスト リスト1_1_2</li></ul></li><li>ネスト リスト1_2</li></ul>'},
+      // {title: 'テーブル', originalText: '|header1|header2|header3| |:--|--:|:--:| |align left|align right|align center| |a|b|c|', compiledText: '<table><thead><tr><th>header1</th><th>header2</th><th>header3</th></tr></thead><tbody><tr><td>align left</td><td>align right</td><td>align center</td></tr><tr><td>a</td><td>b</td><td>c</td></tr></tbody></table>'},
+      // {title: 'リンク', originalText: '[Google](https://www.google.co.jp/)', compiledText: '<a href="https://www.google.co.jp/" rel="nofollow noopener" target="_blank">Google</a>'},
     ],
     selectedItem: {
       title: '',
       compiledText: ''
     },
+    updateItem: {
+    },
     input: '',
     isShow: false,
+    show: false,
   },
   methods: {
     preview: function(item){
@@ -105,22 +130,33 @@ var app = new Vue({
       var newOriginalText = this.originalText;
       var newCompiledText = this.compiledMarkdown;
       var compiledArea = document.getElementById('js-compiled-Area');
-
+      var compailedArea = document.getElementById('js-compiled-area');
       if(!newItemTitle && !newOriginalText){
         return;
       }
-
       this.items.push(
         {title: newItemTitle, originalText: newOriginalText, compiledText: newCompiledText}
       );
-
       this.itemTitle = '';
       this.originalText  = '';
+      compiledArea.innerHTML = '';
       compiledArea.innerHTML = '';
     },
     deleteItem: function(item){
       var index = this.items.indexOf(item);
       this.items.splice(index, 1);
+    },
+    editingItem: function(item){
+      this.updateItem = item;
+    },
+    editing: function(item){
+      var updatedText = this.compiledMarkdown;
+      var compailedArea = document.getElementById('js-compiled-area');
+      var compiledArea = document.getElementById('js-compiled-Area');
+      this.selectedItem.compiledText = updatedText;
+      this.compiledMarkdown = ''
+      compailedArea.innerHTML = '';
+      compiledArea.innerHTML = '';
     }
   },
   computed: {

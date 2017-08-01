@@ -2,7 +2,8 @@
   display: none;
 }
 
-.show {
+.show,
+.is-show {
   visibility: visible;
   opacity: 1;
 }
