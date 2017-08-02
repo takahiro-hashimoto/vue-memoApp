@@ -17,7 +17,7 @@
 
   <div class="header clearfix">
     <h1 class="header-title l-left">memoApps</h1>
-    <button class="l-header-button header-button" type="button" v-on:click="isShow=!isShow">
+    <button class="l-header-button header-button" type="button" v-on:click="addModal=!addModal">
       <i class="fa fa-plus-square-o" aria-hidden="true"></i>
     </button>
   </div>
@@ -27,7 +27,7 @@
       <li class="js-content-item content-item" v-on:click="preview(item)" v-for="item in items">
         <div class="content-item-title" v-html="item.title"></div>
         <div class="js-content-button-container content-button-container is-hide">
-          <button class="content-button l-content-button-edit" v-on:click="show=!show" type="button">
+          <button class="content-button l-content-button-edit" v-on:click="editModal=!editModal" type="button">
             <i class="fa fa-pencil" aria-hidden="true"></i>
           </button>
           <button class="content-button l-content-button-delete" v-on:click="deleteItem(item)" type="button">
@@ -43,7 +43,7 @@
   </div>
 
   <!-- modal for newItemT ▼-->
-  <div class="editor" v-bind:class="{show: isShow}">
+  <div class="editor" v-bind:class="{show: addModal}">
     <div class="editor-header l-bottom-midium">
       <input class="editor-title" v-model="itemTitle" type="text" placeholder="タイトルを入力してください">
     </div>
@@ -57,14 +57,14 @@
       </div>
     </div>
     <div class="editor-bottom">
-      <button class="button button-edit" v-on:click="addItem(), isShow=!isShow" type="button" name="button">保存</button>
-      <button class="button button-close" v-on:click="isShow=!isShow" type="button" name="button">閉じる</button>
+      <button class="button button-edit" v-on:click="addItem(), addModal=!addModal" type="button" name="button">保存</button>
+      <button class="button button-close" v-on:click="addModal=!addModal" type="button" name="button">閉じる</button>
     </div>
   </div>
   <!-- modal for newItemT ▲-->
 
   <!-- modal for edititemItemT ▼-->
-  <div class="editor" v-bind:class="{show: show}">
+  <div class="editor" v-bind:class="{show: editModal}">
     <div class="editor-header l-bottom-midium">
       <input class="editor-title" v-model="selectedItem.title" type="text" placeholder="タイトルを入力してください">
     </div>
@@ -78,14 +78,14 @@
       </div>
     </div>
     <div class="editor-bottom">
-      <button class="button button-save" v-on:click="edititem(), show=!show" type="button" name="button">変更</button>
-      <button class="button button-close" v-on:click="show=!show" type="button" name="button">閉じる</button>
+      <button class="button button-save" v-on:click="edititem(), editModal=!editModal" type="button" name="button">変更</button>
+      <button class="button button-close" v-on:click="editModal=!editModal" type="button" name="button">閉じる</button>
     </div>
   </div>
   <!-- modal for edititemItemT ▲-->
 
-  <div class="overlay" v-bind:class="{show: isShow}" v-on:click="isShow=!isShow"></div>
-  <div class="overlay" v-bind:class="{show: show}" v-on:click="show=!show"></div>
+  <div class="overlay" v-bind:class="{show: addModal}" v-on:click="addModal=!addModal"></div>
+  <div class="overlay" v-bind:class="{show: editModal}" v-on:click="editModal=!editModal"></div>
 
 </div>
 
@@ -110,8 +110,8 @@ var app = new Vue({
       originalText: '# 見出し1\n## 見出し2\n### 見出し3\n#### 見出し4\n##### 見出し5\n###### 見出し6'
     },
     input: '',
-    isShow: false,
-    show: false,
+    addModal: false,
+    editModal: false,
   },
   methods: {
     preview: function(item){
