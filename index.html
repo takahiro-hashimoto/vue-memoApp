@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <!-- modal for newItemT ▼-->
+  <!-- modal for addItem ▼-->
   <div class="editor" v-bind:class="{show: addModal}">
     <div class="editor-header l-bottom-midium">
       <input class="editor-title" v-model="itemTitle" type="text" placeholder="タイトルを入力してください">
@@ -52,7 +52,7 @@
         <textarea class="editor-textarea" v-model="originalText" v-bind:value="input" v-on:input="update"></textarea>
       </div>
       <div class="editor-preview compile">
-        <div id="js-compiled-Area" v-html="compiledMarkdown">
+        <div id="js-add-compiled" v-html="compiledMarkdown">
         </div>
       </div>
     </div>
@@ -61,9 +61,10 @@
       <button class="button button-close" v-on:click="addModal=!addModal" type="button" name="button">閉じる</button>
     </div>
   </div>
-  <!-- modal for newItemT ▲-->
+  <div class="overlay" v-bind:class="{show: addModal}" v-on:click="addModal=!addModal"></div>
+  <!-- modal for addItem ▲-->
 
-  <!-- modal for edititemItemT ▼-->
+  <!-- modal for editItem ▼-->
   <div class="editor" v-bind:class="{show: editModal}">
     <div class="editor-header l-bottom-midium">
       <input class="editor-title" v-model="selectedItem.title" type="text" placeholder="タイトルを入力してください">
@@ -73,19 +74,16 @@
         <textarea class="editor-textarea" v-model="selectedItem.originalText" v-bind:value="input" v-on:input="update"></textarea>
       </div>
       <div class="editor-preview compile">
-        <div id="js-compiled-area" v-html="compiledMarkdown">
-        </div>
+        <div id="js-edit-compiled" v-html="compiledMarkdown"></div>
       </div>
     </div>
     <div class="editor-bottom">
-      <button class="button button-save" v-on:click="edititem(), editModal=!editModal" type="button" name="button">変更</button>
+      <button class="button button-save" v-on:click="editItem(), editModal=!editModal" type="button" name="button">変更</button>
       <button class="button button-close" v-on:click="editModal=!editModal" type="button" name="button">閉じる</button>
     </div>
   </div>
-  <!-- modal for edititemItemT ▲-->
-
-  <div class="overlay" v-bind:class="{show: addModal}" v-on:click="addModal=!addModal"></div>
   <div class="overlay" v-bind:class="{show: editModal}" v-on:click="editModal=!editModal"></div>
+  <!-- modal for editItem ▲-->
 
 </div>
 
@@ -107,11 +105,11 @@ var app = new Vue({
     selectedItem: {
       title: '見出し',
       compiledText: '<h1 id=\"-1\">見出し1</h1>\n<h2 id=\"-2\">見出し2</h2>\n<h3 id=\"-3\">見出し3</h3>\n<h4 id=\"-4\">見出し4</h4>\n<h5 id=\"-5\">見出し5</h5>\n<h6 id=\"-6\">見出し6</h6>\n',
-      originalText: '# 見出し1\n## 見出し2\n### 見出し3\n#### 見出し4\n##### 見出し5\n###### 見出し6'
+      originalText: '# 見出し1\n## 見出し2\n### 見出し3\n#### 見出し4\n##### 見出し5\n###### 見出し6',
     },
     input: '',
     addModal: false,
-    editModal: false,
+    editModal: false
   },
   methods: {
     preview: function(item){
@@ -121,34 +119,34 @@ var app = new Vue({
       this.input = eventObject.target.value;
     },
     addItem: function(){
-      var newItemTitle = this.itemTitle;
+      var newTitle = this.itemTitle;
       var newOriginalText = this.originalText;
       var newCompiledText = this.compiledMarkdown;
-      var compiledArea = document.getElementById('js-compiled-Area');
-      var compailedArea = document.getElementById('js-compiled-area');
-      if(!newItemTitle && !newOriginalText){
+      var addCompiled = document.getElementById('js-add-compiled');
+      var editCompiled = document.getElementById('js-edit-compiled');
+      if(!newTitle && !newOriginalText){
         return;
       }
       this.items.push(
-        {title: newItemTitle, originalText: newOriginalText, compiledText: newCompiledText}
+        {title: newTitle, originalText: newOriginalText, compiledText: newCompiledText}
       );
       this.itemTitle = '';
       this.originalText  = '';
-      compiledArea.innerHTML = '';
-      compiledArea.innerHTML = '';
+      editCompiled.innerHTML = '';
+      addCompiled.innerHTML = '';
     },
     deleteItem: function(item){
       var index = this.items.indexOf(item);
       this.items.splice(index, 1);
     },
-    edititem: function(item){
+    editItem: function(item){
       var updatedText = this.compiledMarkdown;
-      var compailedArea = document.getElementById('js-compiled-area');
-      var compiledArea = document.getElementById('js-compiled-Area');
+      var editCompiled = document.getElementById('js-edit-compiled');
+      var addCompiled = document.getElementById('js-add-compiled');
       this.selectedItem.compiledText = updatedText;
-      this.compiledMarkdown = ''
-      compailedArea.innerHTML = '';
-      compiledArea.innerHTML = '';
+      this.compiledMarkdown = '';
+      editCompiled.innerHTML = '';
+      addCompiled.innerHTML = '';
     }
   },
   computed: {
