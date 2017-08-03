@@ -23,7 +23,3 @@
 - データをlocalStorageもしくはDBにいれて保存できるようにしたかった
 - dataはtitleとMarkdownのオリジナルテキストのみにしたかった
 - もっとDOMの構造をシンプルにできたはず
-
-## 紹介したいもの
-- MarkdownEditorのスタイルは下記サイトのものを参考▼
-[http://markedstyle.com/](http://markedstyle.com/)
