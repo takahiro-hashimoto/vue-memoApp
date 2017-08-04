@@ -1,4 +1,4 @@
-# vue.jsでMarkdownEditorで書けるメモアプリを作ってみた
+# MarkdownEditor記法のメモアプリをvue.jsで作ってみた
 
 ## 今回の目標
 - vue.jsの理解度を高める
