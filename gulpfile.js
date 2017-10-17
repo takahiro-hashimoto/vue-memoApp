@@ -4,9 +4,13 @@ var gulp = require('gulp');
 var style = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var script = require('gulp-concat');
+var plumber = require('gulp-plumber');
+var eslint = require('gulp-eslint');
+var babel = require('gulp-babel');
 
 gulp.task('style', function () {
-    gulp.src(['./src/css/style.scss'])
+  gulp.src(['./src/css/style.scss'])
+    .pipe(plumber())
     .pipe(style())
     .pipe(autoprefixer())
     .pipe(gulp.dest('./dst/css/'));
@@ -14,6 +18,11 @@ gulp.task('style', function () {
 
 gulp.task('script', function(){
   gulp.src(['./src/script/index.js'])
+  .pipe(plumber())
+  .pipe(babel())
+  .pipe(eslint())
+  .pipe(eslint.format())
+  .pipe(eslint.failAfterError())
   .pipe(gulp.dest('./dst/script/'));
 });
 
