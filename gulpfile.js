@@ -8,7 +8,7 @@ var plumber = require('gulp-plumber');
 var eslint = require('gulp-eslint');
 var babel = require('gulp-babel');
 
-gulp.task('style', function () {
+gulp.task('style', function() {
   gulp.src(['./src/css/style.scss'])
     .pipe(plumber())
     .pipe(style())
